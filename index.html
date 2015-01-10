@@ -1,7 +1,9 @@
 <div id="container" style="position:relative">
   <video autoplay id="videoElement" style="position:absolute"></video>
   <div id="overlay" style="position:absolute;border:1px solid black;">
+
     <img id="swappy" src=""></img>
+
   </div>
 </div>
   <canvas id="canvas"  width="320" height="240" style="display:none"></canvas>
@@ -25,12 +27,9 @@
   htracker.init(vid, can);
   htracker.start();
 
-  var dataz = undefined;
-
   var overlay = document.querySelector("#overlay");
 
   document.addEventListener("facetrackingEvent", function(event) {
-    // console.log(event.x, event.y, event.height, event.width)
 
     var w = event.width;
     var h = event.height;
@@ -40,8 +39,9 @@
 
     overlay.style.left = x+'px';
     overlay.style.top = y+'px';
-    overlay.style.width = w+'px';
-    overlay.style.height = h+'px';
+
+    image.style.width = w+'px';
+    image.style.height = h+'px';
 
     var img = canctx.getImageData(x, y, w, h);
     var tmpCan = document.createElement("canvas");
@@ -52,16 +52,12 @@
 
 
     // send face data up the wire
-    socket.emit('IMG', {  width: w, height: h, source:data });
+    socket.emit('IMG', data);
   })
 
 
   socket.on('IMG', function(img){
-    console.log(img)
-    image.width = img.width;
-    image.height = img.height;
-    image.src = img.source;
-    // store img somewhere....
+    image.src = img;
   });
 
 
