@@ -1,0 +1,68 @@
+<div id="container" style="position:relative">
+  <video autoplay id="videoElement" style="position:absolute"></video>
+  <div id="overlay" style="position:absolute;border:1px solid black;">
+    <img id="swappy" src=""></img>
+  </div>
+</div>
+  <canvas id="canvas"  width="320" height="240" style="display:none"></canvas>
+  <canvas id="test"  width="320" height="240" ></canvas>
+
+
+<script src='/headtrackr.js'></script>
+<script src="https://cdn.socket.io/socket.io-1.2.1.js"></script>
+<script>
+  var socket = io();
+
+
+
+  var vid = document.querySelector("#videoElement");
+  var can = document.querySelector("#canvas");
+  var canctx = can.getContext('2d');
+
+  var image = document.getElementById('swappy')
+
+  var htracker = new headtrackr.Tracker();
+  htracker.init(vid, can);
+  htracker.start();
+
+  var dataz = undefined;
+
+  var overlay = document.querySelector("#overlay");
+
+  document.addEventListener("facetrackingEvent", function(event) {
+    // console.log(event.x, event.y, event.height, event.width)
+
+    var w = event.width;
+    var h = event.height;
+
+    var x = event.x  - w / 2;
+    var y = event.y - h / 2;
+
+    overlay.style.left = x+'px';
+    overlay.style.top = y+'px';
+    overlay.style.width = w+'px';
+    overlay.style.height = h+'px';
+
+    var img = canctx.getImageData(x, y, w, h);
+    var tmpCan = document.createElement("canvas");
+    tmpCan.width = w;
+    tmpCan.height = h;
+    tmpCan.getContext('2d').putImageData(img, 0, 0);
+    var data = tmpCan.toDataURL("image/jpg")
+
+
+    // send face data up the wire
+    socket.emit('IMG', {  width: w, height: h, source:data });
+  })
+
+
+  socket.on('IMG', function(img){
+    console.log(img)
+    image.width = img.width;
+    image.height = img.height;
+    image.src = img.source;
+    // store img somewhere....
+  });
+
+
+</script>
