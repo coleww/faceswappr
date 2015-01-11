@@ -6,9 +6,16 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/headtrackr.js', function(req, res){
-  res.sendFile(__dirname + '/headtrackr.js');
+// i am so lazy
+app.get('/cat.png', function(req, res){
+  res.sendFile(__dirname + '/cat.png');
 });
+
+// this still probably took less time than googling for how to serve a public folder...
+app.get('/client.js', function(req, res){
+  res.sendFile(__dirname + '/client.js');
+});
+
 
 io.on('connection', function(socket){
   socket.on('IMG', function(img){
